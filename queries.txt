@@ -1,35 +1,24 @@
-ya es toda we
+ya esta we, cualquier duda con chat jpg
 
 CREATE DATABASE IF NOT EXISTS `QuesosArtesanales` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `QuesosArtesanales`;
 
-DROP TABLE IF EXISTS `ingredientes`;
-CREATE TABLE `ingredientes` (
-  `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT,
-  `Ingrediente` varchar(50) NOT NULL,
-  PRIMARY KEY (`ID_Ingrediente`)
-);
-
-DROP TABLE IF EXISTS `recetas`;
 CREATE TABLE `recetas` (
+  `ID_Recetas` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre_Receta` varchar(150) NOT NULL,
-  `ID_Ingrediente` int(11) NOT NULL,
   `Cantidad` int(11) NOT NULL,
   `Instruccion_Preparacion` varchar(250) NOT NULL,
   `Tiempo_Coccion` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
-  CONSTRAINT FK_Recetas_Ingredientes FOREIGN KEY (`ID_Ingrediente`) REFERENCES `ingredientes` (`ID_Ingrediente`)
+  PRIMARY KEY (`ID_Recetas`)
 );
 
-
-
- 
-
-ALTER TABLE `recetas`
-  ADD PRIMARY KEY (`ID_Ingrediente`) USING BTREE;
-
-ALTER TABLE `ingredientes`
-  MODIFY `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT;
+CREATE TABLE `ingredientes` (
+  `ID_Ingrediente` int(11) NOT NULL,
+  `Ingrediente` varchar(50) NOT NULL,
+  `ID_Recetas` int(11) NOT NULL,
+  CONSTRAINT FK_Recetas_Ingredientes FOREIGN KEY (`ID_Recetas`) REFERENCES `recetas` (`ID_Recetas`)
+);
 
 CREATE TABLE `Almacen` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -39,6 +28,6 @@ CREATE TABLE `Almacen` (
   PRIMARY KEY (`ID`)
 );
 
-CREATE TABLE Acceso (
-  Contraseña varchar(16) NOT NULL
+CREATE TABLE `Acceso` (
+  `Contraseña` varchar(16) NOT NULL
 );
