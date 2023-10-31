@@ -4,6 +4,7 @@ import cors from 'cors';
 dotenv.config();
 
 import express from 'express';
+import recetasRoutes from './src/routes/recetasRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -18,7 +19,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Algo se rompió!')
   })
 
- // app.use('/que-selecte',); 
+ app.use('/que-selecte', recetasRoutes); 
  //Comentado hasta que se agreguen rutas para no causar errores
 
 const PORT = process.env.PORT;
