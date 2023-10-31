@@ -53,7 +53,6 @@ export const createRecipe = (req, res) => {
             if (detalles && detalles.length > 0) {
                 const detalleValues = detalles.map((detalle) => [
                     recetaID,
-                    detalle.ID_Ingrediente,
                     detalle.Cantidad,
                     detalle.ID_Medida,
                     detalle.Instruccion_Preparacion,
