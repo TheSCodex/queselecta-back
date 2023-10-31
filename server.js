@@ -19,7 +19,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Algo se rompió!')
   })
 
- app.use('/que-selecte', recetasRoutes); 
+ app.use('/que-selecta', recetasRoutes); 
  //Comentado hasta que se agreguen rutas para no causar errores
 
 const PORT = process.env.PORT;
