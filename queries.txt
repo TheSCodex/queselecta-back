@@ -1,91 +1,43 @@
-PONGAN AQUÍ LAS QUERIES DE LA BASE DE DATOS PARA QUE LAS PUEDAN EJECUTAR LOS DEMÁS
+ya es toda we
 
-
--- ---------------------------------------------------------
 CREATE DATABASE IF NOT EXISTS `QuesosArtesanales` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `QuesosArtesanales`;
 
--- --------------------------------------------------------
---
--- Estructura de tabla para la tabla `ingredientes`
---
 DROP TABLE IF EXISTS `ingredientes`;
 CREATE TABLE `ingredientes` (
-  `ID_Ingrediente` int(11) NOT NULL,
-  `Ingrediente` varchar(50) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
---
--- Estructura de tabla para la tabla `recetas`
---
+  `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT,
+  `Ingrediente` varchar(50) NOT NULL,
+  PRIMARY KEY (`ID_Ingrediente`)
+);
 
 DROP TABLE IF EXISTS `recetas`;
 CREATE TABLE `recetas` (
-  `ID_Receta` int(11) NOT NULL,
-  `Nombre_Receta` varchar(50) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `recetasdetalle`
---
-
-DROP TABLE IF EXISTS `recetasdetalle`;
-CREATE TABLE `recetasdetalle` (
-  `ID_Receta` int(11) NOT NULL,
+  `Nombre_Receta` varchar(150) NOT NULL,
   `ID_Ingrediente` int(11) NOT NULL,
   `Cantidad` int(11) NOT NULL,
-  `ID_Medida` int(11) NOT NULL,
   `Instruccion_Preparacion` varchar(250) NOT NULL,
   `Tiempo_Coccion` varchar(50) NOT NULL,
-  `ID_Dificultad` int(11) NOT NULL,
-  `ID_Categoria` int(11) NOT NULL,
-  `ID_OrigenReceta` int(11) NOT NULL,
-  `FechaEdicion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
---
--- Indices de la tabla `ingredientes`
---
-ALTER TABLE `ingredientes`
-  ADD PRIMARY KEY (`ID_Ingrediente`);
+  `descripcion` varchar(250) NOT NULL,
+  CONSTRAINT FK_Recetas_Ingredientes FOREIGN KEY (`ID_Ingrediente`) REFERENCES `ingredientes` (`ID_Ingrediente`)
+);
 
--- Indices de la tabla `recetas`
---
+
+
+ 
+
 ALTER TABLE `recetas`
-  ADD PRIMARY KEY (`ID_Receta`);
+  ADD PRIMARY KEY (`ID_Ingrediente`) USING BTREE;
 
---
--- Indices de la tabla `recetasdetalle`
---
-ALTER TABLE `recetasdetalle`
-  ADD PRIMARY KEY (`ID_Receta`,`ID_Ingrediente`) USING BTREE;
---
--- AUTO_INCREMENT de la tabla `ingredientes`
---
 ALTER TABLE `ingredientes`
   MODIFY `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT;
 
-
---
--- AUTO_INCREMENT de la tabla `recetas`
---
-ALTER TABLE `recetas`
-  MODIFY `ID_Receta` int(11) NOT NULL AUTO_INCREMENT;
-COMMIT;
--- Agregar el campo descripcion a la tabla recetasdetalle
-ALTER TABLE `recetasdetalle`
-ADD `descripcion` varchar(250) NOT NULL;
-
--- Crear la tabla Almacen
 CREATE TABLE `Almacen` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_producto` varchar(50) NOT NULL,
   `cantidad_producto` int(11) NOT NULL,
-  `Categoria` varchar(250) Not null,
+  `Categoria` varchar(250) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+);
 
 CREATE TABLE Acceso (
   Contraseña varchar(16) NOT NULL
