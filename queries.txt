@@ -1,4 +1,4 @@
-ya es toda we
+saquen a gabo x100
 
 CREATE DATABASE IF NOT EXISTS `QuesosArtesanales` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `QuesosArtesanales`;
@@ -12,24 +12,17 @@ CREATE TABLE `ingredientes` (
 
 DROP TABLE IF EXISTS `recetas`;
 CREATE TABLE `recetas` (
+   `ID_Receta` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre_Receta` varchar(150) NOT NULL,
   `ID_Ingrediente` int(11) NOT NULL,
   `Cantidad` int(11) NOT NULL,
   `Instruccion_Preparacion` varchar(250) NOT NULL,
   `Tiempo_Coccion` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
-  CONSTRAINT FK_Recetas_Ingredientes FOREIGN KEY (`ID_Ingrediente`) REFERENCES `ingredientes` (`ID_Ingrediente`)
+  CONSTRAINT FK_Recetas_Ingredientes FOREIGN KEY (`ID_Ingrediente`) REFERENCES `ingredientes` (`ID_Ingrediente`),
+  PRIMARY KEY (`ID_Receta`)
 );
 
-
-
- 
-
-ALTER TABLE `recetas`
-  ADD PRIMARY KEY (`ID_Ingrediente`) USING BTREE;
-
-ALTER TABLE `ingredientes`
-  MODIFY `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT;
 
 CREATE TABLE `Almacen` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -42,3 +35,4 @@ CREATE TABLE `Almacen` (
 CREATE TABLE Acceso (
   Contraseña varchar(16) NOT NULL
 );
+
