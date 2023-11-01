@@ -47,4 +47,4 @@ export const resetAccessPassword = (req, res) => {
   
     return res.status(200).json({ message: "Contraseña de acceso restablecida exitosamente" });
   };
-  
+  /*no se cuales con los campos de la base de datos asi que luego la corrigo lesmigos*/
