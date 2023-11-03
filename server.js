@@ -4,11 +4,14 @@ import cors from 'cors';
 dotenv.config();
 
 import express from 'express';
+import recetasRoutes from './src/routes/recetasRoutes.js';
+import almacenRoutes from './src/routes/almacenRoutes.js';
+import ingredientsRoutes from './src/routes/ingredientesRoutes.js';
 
 const app = express();
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:5173',
     methods: 'GET, POST, PATCH, DELETE',
     allowedHeaders: 'Content-Type'
 }));
@@ -18,7 +21,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Algo se rompió!')
   })
 
- // app.use('/que-selecte',); 
+
+app.use('/que-selecta', recetasRoutes, ingredientsRoutes, almacenRoutes); 
  //Comentado hasta que se agreguen rutas para no causar errores
 
 const PORT = process.env.PORT;
