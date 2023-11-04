@@ -1,16 +1,6 @@
 CREATE DATABASE IF NOT EXISTS `QuesosArtesanales`;
 USE `QuesosArtesanales`;
 
-DROP TABLE IF EXISTS `ingredientes`;
-CREATE TABLE `ingredientes` (
-  `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT,
-  `Ingrediente` varchar(50) NOT NULL,
-  `Receta_ID` int(11),
-  PRIMARY KEY (`ID_Ingrediente`),
-  CONSTRAINT FK_Ingredientes_Recetas FOREIGN KEY (`Receta_ID`) REFERENCES `recetas` (`ID`)
-);
-
-DROP TABLE IF EXISTS `recetas`;
 CREATE TABLE `recetas` (
   `ID_Receta` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre_Receta` varchar(150) NOT NULL,
@@ -18,7 +8,15 @@ CREATE TABLE `recetas` (
   `Instruccion_Preparacion` varchar(250) NOT NULL,
   `Tiempo_Coccion` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID_Receta`)
+);
+
+CREATE TABLE `ingredientes` (
+  `ID_Ingrediente` int(11) NOT NULL AUTO_INCREMENT,
+  `Ingrediente` varchar(50) NOT NULL,
+  `Receta_ID` int(11),
+  PRIMARY KEY (`ID_Ingrediente`),
+  CONSTRAINT FK_Ingredientes_Recetas FOREIGN KEY (`Receta_ID`) REFERENCES `recetas` (`ID_Receta`)
 );
 
 CREATE TABLE `Almacen` (
@@ -26,10 +24,9 @@ CREATE TABLE `Almacen` (
   `nombre_producto` varchar(50) NOT NULL,
   `cantidad_producto` int(11) NOT NULL,
   `Categoria` varchar(250) NOT NULL,
-  PRIMARY KEY (`ID`)
+  PRIMARY KEY (`ID_Producto`)
 );
 
 CREATE TABLE Acceso (
   Contraseña varchar(16) NOT NULL
 );
-
