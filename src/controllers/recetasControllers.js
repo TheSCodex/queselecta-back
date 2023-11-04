@@ -3,28 +3,36 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Recibir todas las recetas
-
 export const getAllRecipes = (req, res) => {
   connection.query(
-    "SELECT recetas.*, recetasdetalle.* FROM recetas LEFT JOIN recetasdetalle ON recetas.ID_Receta = recetasdetalle.ID_Receta",
+    "SELECT r.ID_Receta, r.Nombre_Receta, r.descripcion, GROUP_CONCAT(i.Ingrediente) AS Ingredients FROM recetas r LEFT JOIN ingredientes i ON r.ID_Receta = i.Receta_ID GROUP BY r.ID_Receta",
     (err, results) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ message: "Error interno" });
+        return res.status(500).json({ message: "Internal Server Error" });
       }
+
+      // Parse the Ingredients field to split it into an array
+      results = results.map((row) => {
+        return {
+          ID_Receta: row.ID_Receta,
+          Nombre_Receta: row.Nombre_Receta,
+          descripcion: row.descripcion,
+          Ingredients: row.Ingredients ? row.Ingredients.split(',') : [],
+        };
+      });
+
       res.status(200).json(results);
     }
   );
 };
 
-// recibir una receta
+
 
 export const getOneRecipe = (req, res) => {
   const idReceta = req.params.id;
-
   connection.query(
-    "SELECT recetas.*, recetasdetalle.* FROM recetas LEFT JOIN recetasdetalle ON recetas.ID_Receta = recetasdetalle.ID_Receta WHERE recetas.ID_Receta = ?",
+    "SELECT * FROM recetas WHERE ID_Receta = ?",
     [idReceta],
     (err, results) => {
       if (err) {
@@ -35,130 +43,118 @@ export const getOneRecipe = (req, res) => {
       if (results.length === 0) {
         return res.status(404).json({ message: "Receta no encontrada." });
       }
-      res.status(200).json(results);
+      res.status(200).json(results[0]);
     }
   );
 };
 
-// Crear una receta
-
-export const createRecipe = (req, res) => {
-  const { Nombre_Receta, detalles } = req.body;
-
+export const getLastAddedRecipe = (req, res) => {
   connection.query(
-    "INSERT INTO recetas (Nombre_Receta) VALUES (?)",
-    [Nombre_Receta],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Error al crear la receta" });
-      } else {
-        const recetaID = result.insertId;
-
-        if (detalles && detalles.length > 0) {
-          const detalleValues = detalles.map((detalle) => [
-            recetaID,
-            detalle.ID_Ingrediente,
-            detalle.Cantidad,
-            detalle.ID_Medida,
-            detalle.Instruccion_Preparacion,
-            detalle.Tiempo_Coccion,
-            detalle.ID_Dificultad,
-            detalle.ID_Categoria,
-            detalle.ID_OrigenReceta,
-            detalle.descripcion,
-          ]);
-
-          connection.query(
-            "INSERT INTO recetasdetalle (ID_Receta, ID_Ingrediente, Cantidad, ID_Medida, Instruccion_Preparacion, Tiempo_Coccion, ID_Dificultad, ID_Categoria, ID_OrigenReceta, descripcion) VALUES ?",
-            [detalleValues],
-            (err) => {
-              if (err) {
-                console.error(err);
-                return res
-                  .status(500)
-                  .json({
-                    message: "Error al crear los detalles de la receta",
-                  });
-              }
-
-              res.status(201).json({ message: "Receta creada con éxito" });
-            }
-          );
-        } else {
-          res
-            .status(400)
-            .json({ message: "Ingresa los detalles de la receta" });
-        }
-      }
-    }
-  );
-};
-
-// Actualizar una receta
-
-export const updateRecipe = (req, res) => {
-  const recetaID = req.params.id;
-  const { Nombre_Receta, detalles } = req.body;
-
-  connection.query(
-    "UPDATE recetas SET Nombre_Receta = ? WHERE ID_Receta = ?",
-    [Nombre_Receta, recetaID],
+    "SELECT * FROM recetas ORDER BY created_at DESC LIMIT 1",
     (err, results) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Error interno del servidor" });
       }
 
-      if (detalles && detalles.length > 0) {
-        const detalleValues = detalles.map((detalle) => [
-          detalle.ID_Ingrediente,
-          detalle.Cantidad,
-          detalle.ID_Medida,
-          detalle.Instruccion_Preparacion,
-          detalle.Tiempo_Coccion,
-          detalle.ID_Dificultad,
-          detalle.ID_Categoria,
-          detalle.ID_OrigenReceta,
-          detalle.descripcion,
+      if (results.length === 0) {
+        return res.status(404).json({ message: "Receta no encontrada." });
+      }
+
+      res.status(200).json(results[0]);
+    }
+  );
+};
+
+
+export const createRecipe = (req, res) => {
+  const { Nombre_Receta, descripcion, ingredientes } = req.body;
+
+  console.log("Received request data:", req.body);
+
+  connection.query(
+    "INSERT INTO recetas (Nombre_Receta, descripcion) VALUES (?, ?)",
+    [Nombre_Receta, descripcion],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        console.log("Error while inserting into recetas table");
+        return res.status(500).json({ message: "Error al crear la receta" });
+      } else {
+        const recetaID = result.insertId;
+        console.log(ingredientes);
+
+        if (ingredientes && ingredientes.length > 0) {
+          const ingredientValues = ingredientes.map((ingrediente) => [
+            ingrediente, // Use the ingredient name directly
+            recetaID,
+          ]);
+
+          console.log("Ingredient values to insert:", ingredientValues);
+
+          connection.query(
+            "INSERT INTO ingredientes (Ingrediente, Receta_ID) VALUES ?",
+            [ingredientValues],
+            (err) => {
+              if (err) {
+                console.error(err);
+                console.log("Error while inserting into ingredientes table");
+                return res.status(500).json({
+                  message: "Error al crear los ingredientes de la receta",
+                });
+              }
+
+              res.status(201).json({ message: "Receta creada con éxito" });
+            }
+          );
+        } else {
+          console.log("No ingredient data provided.");
+          res
+            .status(400)
+            .json({ message: "Ingresa los ingredientes de la receta" });
+        }
+      }
+    }
+  );
+};
+
+
+export const updateRecipe = (req, res) => {
+  const recetaID = req.params.id;
+  const { Nombre_Receta, descripcion, ingredientes } = req.body;
+
+  connection.query(
+    "UPDATE recetas SET Nombre_Receta = ?, descripcion = ? WHERE ID_Receta = ?",
+    [Nombre_Receta, descripcion, recetaID],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Error interno del servidor" });
+      }
+
+      if (ingredientes && ingredientes.length > 0) {
+        const ingredientValues = ingredientes.map((ingrediente) => [
+          ingrediente.ID_Ingrediente,
           recetaID,
         ]);
 
-        console.log(detalleValues);
-
-        const detalleFlat = detalleValues.flat();
-        console.log(detalleFlat);
-
         connection.query(
-          "UPDATE recetasdetalle SET " +
-            "ID_Ingrediente = ?, " +
-            "Cantidad = ?, " +
-            "ID_Medida = ?, " +
-            "Instruccion_Preparacion = ?, " +
-            "Tiempo_Coccion = ?, " +
-            "ID_Dificultad = ?, " +
-            "ID_Categoria = ?, " +
-            "ID_OrigenReceta = ?, " +
-            "descripcion = ? " +
-            "WHERE ID_Receta = ?",
-          detalleFlat,
+          "UPDATE ingredientes SET Receta_ID = ? WHERE ID_Ingrediente = ?",
+          ingredientValues,
           (err) => {
             if (err) {
               console.error("Hubo un error", err);
-              return res
-                .status(500)
-                .json({ message: "Error interno del servidor" });
+              return res.status(500).json({
+                message: "Error al actualizar los ingredientes de la receta",
+              });
             }
-            res
-              .status(200)
-              .json({ message: "Receta y detalles actualizados con éxito" });
+            res.status(200).json({
+              message: "Receta y ingredientes actualizados con éxito",
+            });
           }
         );
       } else {
-        console.log(recetaID);
-        res
-          .status(200)
-          .json({ message: "Se actualizó el nombre de la receta con éxito." });
+        res.status(200).json({ message: "Se actualizó la receta con éxito." });
       }
     }
   );
@@ -180,12 +176,12 @@ export const deleteRecipe = (req, res) => {
       }
 
       connection.query(
-        "DELETE FROM recetasdetalle WHERE ID_Receta = ?",
+        "DELETE FROM ingredientes WHERE Receta_ID = ?",
         [idReceta],
         (err, results) => {
           if (err) {
             console.error(
-              "Hubo un error en tu petición de eliminar los detalles de la receta",
+              "Hubo un error en tu petición de eliminar los ingredientes de la receta",
               err
             );
             return res
@@ -193,11 +189,9 @@ export const deleteRecipe = (req, res) => {
               .json({ message: "Error interno del servidor" });
           }
 
-          res
-            .status(200)
-            .json({
-              message: "Receta y detalles de receta eliminados correctamente",
-            });
+          res.status(200).json({
+            message: "Receta y ingredientes de receta eliminados correctamente",
+          });
         }
       );
     }
