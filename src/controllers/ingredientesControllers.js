@@ -30,10 +30,10 @@ export const getIngredientsById = (req, res) => {
 };
 
 export const createIngredient = (req, res) => {
-  const { idIngrediente, Ingrediente } = req.body;
+  const { Ingrediente } = req.body;
   connection.query(
     "INSERT INTO ingredientes (Ingrediente) VALUES (?)",
-    [ingrediente],
+    [Ingrediente],
     (err, results) => {
       if (err) {
         console.err(err);
@@ -67,7 +67,7 @@ export const updateIngredient = (req, res) => {
   const ingredienteId = req.params.ID_Ingrediente;
   const { ingrediente } = req.body;
   connection.query(
-    "UPDATE ingredientes SET Ingrediente = ?",
+    "UPDATE ingredientes SET Ingrediente = ?",[ingredienteId, ingrediente],
     (err, results) => {
       if (err) {
         console.err(err);
