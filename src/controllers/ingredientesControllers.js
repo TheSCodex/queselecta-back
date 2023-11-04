@@ -3,7 +3,7 @@ import connection from "../db.js";
 export const getIngredients = (req, res) => {
   connection.query("SELECT * FROM ingredientes", (err, results) => {
     if (err) {
-      console.log(err);
+      console.error(err);
       return res.status(500).json({ message: "Error Interno del servidor" });
     }
     return res.status(200).json(results);
@@ -22,9 +22,9 @@ export const getIngredientsById = (req, res) => {
       }
 
       if (results.length === 0) {
-        return res.status(404).json({ message: "Ingrediente no encontrada." });
+        return res.status(404).json({ message: "Ingrediente no encontrado." });
       }
-      res.status(200).json(results);
+      res.status(200).json(results[0]);
     }
   );
 };
@@ -36,7 +36,7 @@ export const createIngredient = (req, res) => {
     [Ingrediente],
     (err, results) => {
       if (err) {
-        console.err(err);
+        console.error(err);
         return res.status(500).json({ message: "Error Interno del Servidor" });
       }
       res.status(201).json({ message: "Ingrediente creado exitosamente" });
@@ -45,13 +45,13 @@ export const createIngredient = (req, res) => {
 };
 
 export const deleteIngredient = (req, res) => {
-  const idIngrediente = req.params.ID_Ingrediente;
+  const idIngrediente = req.params.id;
   connection.query(
     "DELETE FROM ingredientes WHERE ID_Ingrediente = ?",
     [idIngrediente],
     (err, results) => {
       if (err) {
-        console.err(err);
+        console.error(err);
         return res
           .status(500)
           .json({ message: "Error Interno en el servidor" });
@@ -64,13 +64,14 @@ export const deleteIngredient = (req, res) => {
 };
 
 export const updateIngredient = (req, res) => {
-  const ingredienteId = req.params.ID_Ingrediente;
-  const { ingrediente } = req.body;
+  const idIngrediente = req.params.id;
+  const { Ingrediente } = req.body;
   connection.query(
-    "UPDATE ingredientes SET Ingrediente = ?",[ingredienteId, ingrediente],
+    "UPDATE ingredientes SET Ingrediente = ? WHERE ID_Ingrediente = ?",
+    [Ingrediente, idIngrediente],
     (err, results) => {
       if (err) {
-        console.err(err);
+        console.error(err);
         return res.status(500).json({ message: "Error Interno del servidor" });
       }
       return res
