@@ -4,9 +4,6 @@ USE `QuesosArtesanales`;
 CREATE TABLE `recetas` (
   `ID_Receta` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre_Receta` varchar(150) NOT NULL,
-  `Cantidad` int(11) NOT NULL,
-  `Instruccion_Preparacion` varchar(250) NOT NULL,
-  `Tiempo_Coccion` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
   PRIMARY KEY (`ID_Receta`)
 );
