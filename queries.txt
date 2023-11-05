@@ -28,5 +28,6 @@ CREATE TABLE `Almacen` (
 );
 
 CREATE TABLE Acceso (
+  ID_Acceso INT PRIMARY KEY NOT NULL,
   Contraseña varchar(16) NOT NULL
 );
