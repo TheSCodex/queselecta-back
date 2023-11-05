@@ -10,6 +10,21 @@ export const getIngredients = (req, res) => {
   });
 };
 
+export const getIngredientsByRecipe = (req, res) => {
+  const idRecipe = req.params.id;
+  connection.query(
+    "SELECT * FROM ingredientes WHERE Receta_ID = ?",
+    [idRecipe],
+    (err, results) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Error Interno del servidor" });
+      }
+      return res.status(200).json(results);
+    }
+  );
+};
+
 export const getIngredientsById = (req, res) => {
   const idIngrediente = req.params.id;
   connection.query(
@@ -30,24 +45,33 @@ export const getIngredientsById = (req, res) => {
 };
 
 export const createIngredient = (req, res) => {
-  const { Ingrediente } = req.body;
+  const ingredientes = req.body;
   const Receta_ID = req.params.Receta_ID;
-  connection.query(
-    "INSERT INTO ingredientes (Ingrediente, Receta_ID) VALUES (?, ?)",
-    [Ingrediente, Receta_ID],
-    (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Error Interno del Servidor" });
+
+  // Imprimir los datos recibidos en la consola
+  console.log("Datos recibidos:", req.body, req.params);
+
+  ingredientes.forEach((ingrediente) => {
+    connection.query(
+      "INSERT INTO ingredientes (Ingrediente, Receta_ID) VALUES (?, ?)",
+      [ingrediente.Ingrediente, ingrediente.Receta_ID],
+      (err, results) => {
+        if (err) {
+          console.error(err);
+          return res
+            .status(500)
+            .json({ message: "Error Interno del Servidor" });
+        }
       }
-      res.status(201).json({ message: "Ingrediente creado exitosamente" });
-    }
-  );
+    );
+  });
+
+  res.status(201).json({ message: "Ingredientes creados exitosamente" });
 };
 
-
 export const deleteIngredient = (req, res) => {
-  const idIngrediente = req.params.id;
+  const idIngrediente = parseInt(req.params.id);
+  console.log(req.params);
   connection.query(
     "DELETE FROM ingredientes WHERE ID_Ingrediente = ?",
     [idIngrediente],
