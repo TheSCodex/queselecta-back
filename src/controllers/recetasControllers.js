@@ -11,14 +11,12 @@ export const getAllRecipes = (req, res) => {
         console.error(err);
         return res.status(500).json({ message: "Internal Server Error" });
       }
-
-      // Parse the Ingredients field to split it into an array
       results = results.map((row) => {
         return {
           ID_Receta: row.ID_Receta,
           Nombre_Receta: row.Nombre_Receta,
           descripcion: row.descripcion,
-          Ingredients: row.Ingredients ? row.Ingredients.split(',') : [],
+          Ingredients: row.Ingredients ? row.Ingredients.split(",") : [],
         };
       });
 
@@ -26,8 +24,6 @@ export const getAllRecipes = (req, res) => {
     }
   );
 };
-
-
 
 export const getOneRecipe = (req, res) => {
   const idReceta = req.params.id;
@@ -47,25 +43,6 @@ export const getOneRecipe = (req, res) => {
     }
   );
 };
-
-export const getLastAddedRecipe = (req, res) => {
-  connection.query(
-    "SELECT * FROM recetas ORDER BY created_at DESC LIMIT 1",
-    (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: "Error interno del servidor" });
-      }
-
-      if (results.length === 0) {
-        return res.status(404).json({ message: "Receta no encontrada." });
-      }
-
-      res.status(200).json(results[0]);
-    }
-  );
-};
-
 
 export const createRecipe = (req, res) => {
   const { Nombre_Receta, descripcion, ingredientes } = req.body;
@@ -118,7 +95,6 @@ export const createRecipe = (req, res) => {
   );
 };
 
-
 export const updateRecipe = (req, res) => {
   const recetaID = req.params.id;
   const { Nombre_Receta, descripcion, ingredientes } = req.body;
@@ -135,11 +111,12 @@ export const updateRecipe = (req, res) => {
       if (ingredientes && ingredientes.length > 0) {
         const ingredientValues = ingredientes.map((ingrediente) => [
           ingrediente.ID_Ingrediente,
+          ingrediente.Ingrediente,
           recetaID,
         ]);
 
         connection.query(
-          "UPDATE ingredientes SET Receta_ID = ? WHERE ID_Ingrediente = ?",
+          "UPDATE ingredientes SET Ingrediente = ? WHERE ID_Ingrediente = ? AND Receta_ID = ?",
           ingredientValues,
           (err) => {
             if (err) {
@@ -162,31 +139,27 @@ export const updateRecipe = (req, res) => {
 
 export const deleteRecipe = (req, res) => {
   const idReceta = req.params.id;
-
   connection.query(
-    "DELETE FROM recetas WHERE ID_Receta = ?",
+    "DELETE FROM ingredientes WHERE Receta_ID = ?",
     [idReceta],
     (err, results) => {
       if (err) {
         console.error(
-          "Hubo un error en tu petición de eliminar la receta",
+          "Hubo un error en tu petición de eliminar los ingredientes de la receta",
           err
         );
         return res.status(500).json({ message: "Error interno del servidor" });
       }
-
       connection.query(
-        "DELETE FROM ingredientes WHERE Receta_ID = ?",
+        "DELETE FROM recetas WHERE ID_Receta = ?",
         [idReceta],
         (err, results) => {
           if (err) {
             console.error(
-              "Hubo un error en tu petición de eliminar los ingredientes de la receta",
+              "Hubo un error en tu petición de eliminar la receta",
               err
             );
-            return res
-              .status(500)
-              .json({ message: "Error interno del servidor" });
+            return res.status(500).json({ message: "Error interno del servidor" });
           }
 
           res.status(200).json({
@@ -197,3 +170,4 @@ export const deleteRecipe = (req, res) => {
     }
   );
 };
+
