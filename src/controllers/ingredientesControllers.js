@@ -31,9 +31,10 @@ export const getIngredientsById = (req, res) => {
 
 export const createIngredient = (req, res) => {
   const { Ingrediente } = req.body;
+  const Receta_ID = req.params.Receta_ID;
   connection.query(
-    "INSERT INTO ingredientes (Ingrediente) VALUES (?)",
-    [Ingrediente],
+    "INSERT INTO ingredientes (Ingrediente, Receta_ID) VALUES (?, ?)",
+    [Ingrediente, Receta_ID],
     (err, results) => {
       if (err) {
         console.error(err);
@@ -43,6 +44,7 @@ export const createIngredient = (req, res) => {
     }
   );
 };
+
 
 export const deleteIngredient = (req, res) => {
   const idIngrediente = req.params.id;
