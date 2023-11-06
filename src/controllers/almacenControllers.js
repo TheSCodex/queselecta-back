@@ -37,7 +37,7 @@ export const getInventoryElement = (req,res) => {
 
 // POST add to inventory
 export const addElement = (req,res) => {
-    const { nombreProducto, cantidadProducto, categoria } = req.body
+    const { nombreProducto, cantidadProducto, descripcionProducto, categoria } = req.body
 
     /*
         Poner en el body de la peticion la siguiente estructura:
@@ -51,15 +51,15 @@ export const addElement = (req,res) => {
     // Validar los parámetros del body
     if (
         !nombreProducto || typeof nombreProducto !== 'string' || nombreProducto === "" ||
-        (typeof cantidadProducto !== 'number' || isNaN(cantidadProducto) || cantidadProducto < 0) ||
+        (typeof cantidadProducto !== 'string' || cantidadProducto < 0) ||
         !categoria || typeof categoria !== 'string' || categoria === ""
     ) {
         return res.status(400).json({ "Error": "Parámetros inválidos" });
     }
     
-    const query = `INSERT INTO Almacen (nombre_producto, cantidad_producto, Categoria) VALUES (?, ?, ?)`
+    const query = `INSERT INTO Almacen (nombre_producto, cantidad_producto, descripcion_producto, Categoria) VALUES (?, ?, ?, ?)`
 
-    connection.query(query, [nombreProducto, cantidadProducto, categoria], (err, results) => {
+    connection.query(query, [nombreProducto, cantidadProducto, descripcionProducto, categoria], (err, results) => {
         if(err) {
             console.log(err)
             return res.status(401).json({"Error": `Ha ocurrido un error inesperado ${err}`})
@@ -71,21 +71,12 @@ export const addElement = (req,res) => {
 
 // PATCH edit element
 export const updateElement = (req, res) => {
-    const { nombreProducto, cantidadProducto, categoria } = req.body
+    const { nombreProducto, descripcionProducto, cantidadProducto, categoria } = req.body
     const idElement = req.params.id
 
-    // Validar los parámetros del body
-    if (
-        !nombreProducto || typeof nombreProducto !== 'string' || nombreProducto === "" ||
-        (typeof cantidadProducto !== 'number' || isNaN(cantidadProducto) || cantidadProducto < 0) ||
-        !categoria || typeof categoria !== 'string' || categoria === ""
-    ) {
-        return res.status(400).json({ "Error": "Parámetros inválidos" });
-    }
+    const query = `UPDATE Almacen SET nombre_producto = ?, cantidad_producto = ?, Categoria = ?, descripcion_producto = ? WHERE ID_Producto = ?`
 
-    const query = `UPDATE Almacen SET nombre_producto = ?, cantidad_producto = ?, Categoria = ? WHERE ID = ?`
-
-    connection.query(query, [nombreProducto, cantidadProducto, categoria, idElement], (err, results) => {
+    connection.query(query, [nombreProducto, cantidadProducto, categoria, descripcionProducto, idElement], (err, results) => {
         if(err) {
             console.log(err)
             return res.status(401).json({"Error": `Ha ocurrido un error inesperado ${err}`})
@@ -98,7 +89,7 @@ export const updateElement = (req, res) => {
 // DELETE delete element
 export const deleteElement = (req, res) => {
     const idElement = req.params.id
-    const query = `DELETE FROM Almacen WHERE ID = ?`
+    const query = `DELETE FROM Almacen WHERE ID_Producto = ?`
 
     if(!query) {
         return res.status(401).json({"Error": "Id invalido"})

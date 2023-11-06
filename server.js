@@ -7,6 +7,7 @@ import express from 'express';
 import recetasRoutes from './src/routes/recetasRoutes.js';
 import almacenRoutes from './src/routes/almacenRoutes.js';
 import ingredientsRoutes from './src/routes/ingredientesRoutes.js';
+import sensoresRoutes from './src/routes/sensoresRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -22,7 +23,7 @@ app.use((err, req, res, next) => {
   })
 
 
-app.use('/que-selecta', recetasRoutes, ingredientsRoutes, almacenRoutes); 
+app.use('/que-selecta', recetasRoutes, ingredientsRoutes, almacenRoutes, sensoresRoutes); 
  //Comentado hasta que se agreguen rutas para no causar errores
 
 const PORT = process.env.PORT;

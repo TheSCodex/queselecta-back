@@ -1,13 +1,13 @@
 import express from 'express';
+import * as sensoresController from "../controllers/sensoresControllers.js"
 
-const router = express.Router();
+const sensoresRoutes = express.Router();
 
 // Rutas para lecturas de sensores
-router.get('/lecturas', getAllReadings);
-router.get('/lecturas/:id', getReadingById);
-
+sensoresRoutes.get("/sensores", sensoresController.getSensores)
 // Rutas para acceso
-router.post('/acceso', createAccessPassword);
-router.patch('/acceso', resetAccessPassword);
+sensoresRoutes.post('/acceso', sensoresController.createAccessPassword);
+sensoresRoutes.get("/acceso/:contrasena", sensoresController.acceder)
+sensoresRoutes.patch('/acceso', sensoresController.resetAccessPassword);
 
-export default router;
+export default sensoresRoutes;

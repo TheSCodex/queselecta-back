@@ -20,6 +20,7 @@ CREATE TABLE `Almacen` (
   `ID_Producto` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_producto` varchar(50) NOT NULL,
   `cantidad_producto` int(11) NOT NULL,
+  `descripcion_producto` varchar(500),
   `Categoria` varchar(250) NOT NULL,
   PRIMARY KEY (`ID_Producto`)
 );
